@@ -1,135 +1,120 @@
 import { useState } from "react";
 
-function App() {
-  const [input, setInput] = useState("");
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(false);
+export default function App() {
+  const [idea, setIdea] = useState("");
+  const [result, setResult] = useState("");
 
   const generateIdea = async () => {
-    if (!input.trim()) return;
-
-    setLoading(true);
-    setData(null);
+    setResult("Generating...");
 
     try {
-      const response = await fetch("http://localhost:5000/api/idea", {
+      const res = await fetch("http://localhost:5000/api/idea", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ idea: input })
+        body: JSON.stringify({ idea })
       });
 
-      const result = await response.json();
-      setData(result);
-    } catch (error) {
-      setData({ title: "Error", description: "Failed to connect backend" });
+      const data = await res.json();
+      setResult(data.result);
+    } catch (err) {
+      setResult("Error: Failed to connect backend");
     }
-
-    setLoading(false);
   };
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>🚀 Idea Forge</h1>
-      <p style={styles.subtitle}>
-        Transform ideas into innovative solutions using AI
-      </p>
+    <div style={styles.page}>
+      <div style={styles.card}>
+        <h1 style={styles.title}>🚀 Idea Forge</h1>
+        <p style={styles.subtitle}>
+          Transform ideas into innovative solutions using AI
+        </p>
 
-      <input
-        style={styles.input}
-        type="text"
-        placeholder="Enter your idea (e.g. Smart classroom)"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-      />
+        <input
+          value={idea}
+          onChange={(e) => setIdea(e.target.value)}
+          placeholder="Enter your idea (e.g. Smart classroom)"
+          style={styles.input}
+        />
 
-      <button
-        style={{
-          ...styles.button,
-          opacity: input.trim() ? 1 : 0.5,
-          cursor: input.trim() ? "pointer" : "not-allowed"
-        }}
-        onClick={generateIdea}
-        disabled={!input.trim() || loading}
-      >
-        {loading ? "Generating..." : "Generate Ideas"}
-      </button>
+        <button onClick={generateIdea} style={styles.button}>
+          Generate Ideas
+        </button>
 
-      {data && (
-        <div style={styles.card}>
-          <h2>{data.title}</h2>
-          <p>{data.description}</p>
-
-          {data.features && (
-            <>
-              <h3>Features</h3>
-              <ul>
-                {data.features.map((f, i) => (
-                  <li key={i}>{f}</li>
-                ))}
-              </ul>
-            </>
-          )}
-
-          {data.techStack && (
-            <>
-              <h3>Tech Stack</h3>
-              <ul>
-                {data.techStack.map((t, i) => (
-                  <li key={i}>{t}</li>
-                ))}
-              </ul>
-            </>
-          )}
-        </div>
-      )}
+        {result && (
+          <div style={styles.resultBox}>
+            <pre style={styles.resultText}>{result}</pre>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
 
 const styles = {
-  container: {
-    minHeight: "100vh",
-    background: "#0f172a",
-    color: "white",
+  page: {
+    height: "100vh",
     display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
     justifyContent: "center",
-    padding: "20px",
-    fontFamily: "Arial"
+    alignItems: "center",
+    background: "linear-gradient(135deg, #0f172a, #1e293b)",
+    fontFamily: "Arial, sans-serif"
   },
+
+  card: {
+    width: "420px",
+    padding: "30px",
+    borderRadius: "15px",
+    background: "#111827",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+    textAlign: "center",
+    color: "white"
+  },
+
   title: {
-    color: "#8b5cf6",
-    marginBottom: "5px"
+    marginBottom: "10px",
+    fontSize: "28px"
   },
+
   subtitle: {
-    color: "#94a3b8",
+    fontSize: "14px",
+    color: "#9ca3af",
     marginBottom: "20px"
   },
+
   input: {
-    padding: "10px",
-    width: "300px",
+    width: "100%",
+    padding: "12px",
     borderRadius: "8px",
     border: "none",
     outline: "none",
-    marginBottom: "10px"
+    marginBottom: "15px",
+    fontSize: "14px"
   },
+
   button: {
-    padding: "10px 20px",
-    background: "#8b5cf6",
-    border: "none",
+    width: "100%",
+    padding: "12px",
     borderRadius: "8px",
-    color: "white"
+    border: "none",
+    background: "#6366f1",
+    color: "white",
+    fontWeight: "bold",
+    cursor: "pointer"
   },
-  card: {
+
+  resultBox: {
     marginTop: "20px",
-    background: "#1e293b",
-    padding: "20px",
+    padding: "15px",
+    background: "#0b1220",
     borderRadius: "10px",
-    width: "350px"
+    textAlign: "left"
+  },
+
+  resultText: {
+    whiteSpace: "pre-wrap",
+    fontSize: "13px",
+    color: "#d1d5db"
   }
 };
-
-export default App;
