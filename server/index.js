@@ -1,19 +1,34 @@
+const express = require("express");
+const cors = require("cors");
+
+const app = express();
+
+// middleware
+app.use(cors());
+app.use(express.json());
+
+// test route
+app.get("/", (req, res) => {
+  res.json({ message: "IdeaForge API running 🚀" });
+});
+
+// idea generator API
 app.post("/api/idea", (req, res) => {
-  try {
-    const { idea } = req.body;
+  const { idea } = req.body;
 
-    res.json({
-      title: `Smart ${idea} System`,
-      description: `AI-powered solution for ${idea}`,
-      features: [
-        "Automation",
-        "Real-time processing",
-        "User-friendly UI"
-      ],
-      techStack: ["React", "Node.js", "Express"]
-    });
+  res.json({
+    title: `Smart ${idea} System`,
+    description: `AI-powered solution for ${idea}`,
+    features: [
+      "Automation",
+      "AI integration",
+      "Real-time processing"
+    ],
+    techStack: ["React", "Node.js", "Express"]
+  });
+});
 
-  } catch (error) {
-    res.status(500).json({ error: "Server error" });
-  }
+// start server
+app.listen(5000, () => {
+  console.log("Server running on port 5000");
 });
